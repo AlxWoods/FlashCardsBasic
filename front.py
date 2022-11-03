@@ -4,6 +4,7 @@ import controller
 
 c = controller.Cards('data/words.csv')
 c.make_card_list()
+c.make_card_weight()
 
 
 window = Tk()
@@ -18,6 +19,8 @@ def card_button_click():
     
     
 def next_card():
+    #c.make_card_weight()
+    #c.raise_card(True)
     c.next_card()
     get_text()
 
@@ -26,12 +29,28 @@ def get_text():
     t = '{}\n\n{}'.format(card_text[0],card_text[1])
     card_button.config(text = t)
 
+def raise_card():
+    c.raise_card(True)
+    next_card()
+
+def lower_card():
+    c.raise_card(False)
+    next_card()
+
+
 
 card_button = Button(window, text = card_text, command = card_button_click) #,padx = 100,pady = 50
 next_button = Button(window, text = "Next Card",command = next_card)
 
+raise_button = Button(window, text = "Difficult",command = raise_card)
+lower_button = Button(window, text = "Easy",command = lower_card)
+
+
 card_button.pack()
 next_button.pack()
+
+raise_button.pack()
+lower_button.pack()
 
 
 window.mainloop()

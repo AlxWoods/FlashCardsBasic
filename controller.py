@@ -1,5 +1,7 @@
+from ast import And
 import csv
 from fileinput import filename
+from pickle import TRUE
 import pandas as pd
 import random
 
@@ -54,21 +56,42 @@ class Cards():
         return 
 
     def get_random_card(self):
+        curr = self.current_card
         ind,weight=zip(*self.weighted_list)
-        
-        r = random.randint(1, max(weight))
-        for char, we  in self.weighted_list:
-            temp = r - we 
-            if temp <= 0:
-                card_number = char
+
+        x = random.choices(ind, weights=weight, k=1)
+        while True:
+            if self.current_card != x[0]:
                 break
-        return card_number
+            x = random.choices(ind, weights=weight, k=1)
+
+        self.current_card = x[0]
+
 
     def next_card(self):
-        self.make_card_weight()
-        self.current_card = self.get_random_card()
+        self.get_random_card()
         return
     
+    def raise_card(self, raise_c):
+        end_list = len(self.card_list) - 1
+
+        if self.current_card < end_list and raise_c == True:
+            temp = self.card_list[self.current_card]
+            x = self.current_card + 1
+            self.card_list[self.current_card] = self.card_list[x]
+            self.card_list[x] = temp
+        
+        elif self.current_card > 0 and raise_c == False:
+            temp = self.card_list[self.current_card]
+            x = self.current_card - 1
+            self.card_list[self.current_card] = self.card_list[x]
+            self.card_list[x] = temp
+
+        for x in self.card_list:
+            print(x)
+        print(self.current_card)
+        print(self.weighted_list[self.current_card])
+        return
 
 
 #c = Cards('data/words.csv')
