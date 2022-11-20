@@ -1,28 +1,63 @@
-from ast import And
 import csv
 from fileinput import filename
-from pickle import TRUE
 import pandas as pd
 import random
+import numpy as np
 
 class Cards():
-    def __init__(self,filename,card_list=[],card_side = True,current_card = 0,weighted_list=[]):
+    def __init__(self,filename,card_list=[],card_deck=[],card_side = True,current_card = 0,weighted_list=[]):
         self.filename = filename
-        self.card_list = card_list          
-        self.card_side = card_side          #boolean for whether or not the care is facing upward
-        self.current_card = current_card  
-        self.weighted_list = weighted_list  
+        self.card_list = card_list
+        self.card_deck = card_deck
+        self.card_side = card_side
+        self.current_card = current_card
+        self.weighted_list = weighted_list
+        self.study_deck_size = 5
+        self.numb_of_decks=0
+        self.current = 0
 
-    def make_card_list(self):
+    def nest_list(self,list1,rows,columns):
+        result=[]
+        start = 0
+        end = columns
+        for i in range(rows):
+            result.append(list1[start:end])
+            start +=columns
+            end += columns
+        return result
+
+    def make_deck(self):
         with open(self.filename,'r') as csv_file:
-            csv_reader  = csv.reader(csv_file)
-            
+            csv_reader = csv.reader(csv_file)
             next(csv_reader)
-            self.card_list = []
-
+            full_card_deck = []
             for line in csv_reader:
-                self.card_list.append(line)
+                full_card_deck.append(line)
+                #self.card_list.append(line)
+            self.numb_of_decks = self.determine_size(len(full_card_deck))
+            self.card_deck = self.nest_list(full_card_deck,self.numb_of_decks,self.study_deck_size)
+            self.set_card_list()
             return 
+        
+    def determine_size(self,val):
+        while val % self.study_deck_size != 0:
+            val += 1
+        return int(val / self.study_deck_size)
+
+    def set_card_list(self):
+        self.card_list = self.card_deck[self.current]
+        for x in self.card_list:
+            if x == '':
+                self.card_list.remove('')
+        self.make_card_weight()
+        print(self.card_list)
+        return
+
+    def next_c(self):
+        if self.current + 1 < self.numb_of_decks:
+            self.current += 1
+        self.set_card_list()
+        return
 
     def get_card_text(self,x):
         display_card = []
@@ -58,7 +93,7 @@ class Cards():
     def get_random_card(self):
         curr = self.current_card
         ind,weight=zip(*self.weighted_list)
-
+        print(weight)
         x = random.choices(ind, weights=weight, k=1)
         while True:
             if self.current_card != x[0]:
