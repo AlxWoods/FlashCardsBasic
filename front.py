@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter.messagebox import *
 import controller
 
 
@@ -77,10 +78,20 @@ def get_file():
     pass
 
 def prev_cards():
-    pass
+    card_change = c.current
+    c.prev_c()
+    if card_change == c.current:
+        showinfo("Card Set Error", "Couldn't Go to Previous Set")
 
 def next_cards():
+    card_change = c.current
     c.next_c()
+    if card_change == c.current:
+        showinfo("Card Set Error", "Couldn't Go to Next Set")
+
+def dis_current():
+    pass
+
 
 #create menu
 file_menu = Menu(my_menu, tearoff=0)
@@ -90,9 +101,9 @@ file_menu.add_command(label="Exit", command=window.quit)
 
 cards_menu = Menu(my_menu, tearoff=0)
 my_menu.add_cascade(label="Cards", menu=cards_menu)
-cards_menu.add_command(label="Previous Card Set", command=get_file)
+cards_menu.add_command(label="Previous Card Set", command=prev_cards)
 cards_menu.add_command(label="Next Card Set", command=next_cards)
-cards_menu.add_command(label="Display Current Cards", command=get_file)
+cards_menu.add_command(label="Display Current Cards", command=dis_current)
 
 
 window.mainloop()

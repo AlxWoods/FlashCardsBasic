@@ -1,5 +1,4 @@
 import csv
-from fileinput import filename
 import pandas as pd
 import random
 import numpy as np
@@ -9,12 +8,12 @@ class Cards():
         self.filename = filename
         self.card_list = card_list
         self.card_deck = card_deck
-        self.card_side = card_side
-        self.current_card = current_card
-        self.weighted_list = weighted_list
-        self.study_deck_size = 5
-        self.numb_of_decks=0
-        self.current = 0
+        self.card_side = card_side          #displays current side
+        self.current_card = current_card    
+        self.weighted_list = weighted_list  #frequency of each card randomly chosen
+        self.study_deck_size = 5            #number of cards in the set
+        self.numb_of_decks=0                #total number of sets
+        self.current = 0                    #current set
 
     def nest_list(self,list1,rows,columns):
         result=[]
@@ -34,6 +33,7 @@ class Cards():
             for line in csv_reader:
                 full_card_deck.append(line)
                 #self.card_list.append(line)
+            random.shuffle(full_card_deck)
             self.numb_of_decks = self.determine_size(len(full_card_deck))
             self.card_deck = self.nest_list(full_card_deck,self.numb_of_decks,self.study_deck_size)
             self.set_card_list()
@@ -58,6 +58,11 @@ class Cards():
             self.current += 1
         self.set_card_list()
         return
+
+    def prev_c(self):
+        if self.current > 0:
+            self.current -= 1
+        self.set_card_list()
 
     def get_card_text(self,x):
         display_card = []
@@ -127,9 +132,3 @@ class Cards():
         print(self.current_card)
         print(self.weighted_list[self.current_card])
         return
-
-
-#c = Cards('data/words.csv')
-#c.make_card_list()
-#print(c.get_card_text(0))
-#print(c.get_card_text(0))
