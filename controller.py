@@ -14,6 +14,7 @@ class Cards():
         self.study_deck_size = 5            #number of cards in the set
         self.numb_of_decks=0                #total number of sets
         self.current = 0                    #current set
+        self.full_card_deck = []            #this saves the deck for writing to file
 
     def nest_list(self,list1,rows,columns):
         result=[]
@@ -25,19 +26,35 @@ class Cards():
             end += columns
         return result
 
-    def make_deck(self):
+    def make_deck(self,shuffle):
         with open(self.filename,'r') as csv_file:
             csv_reader = csv.reader(csv_file)
             next(csv_reader)
-            full_card_deck = []
+            self.full_card_deck = []
             for line in csv_reader:
-                full_card_deck.append(line)
+                self.full_card_deck.append(line)
                 #self.card_list.append(line)
-            random.shuffle(full_card_deck)
-            self.numb_of_decks = self.determine_size(len(full_card_deck))
-            self.card_deck = self.nest_list(full_card_deck,self.numb_of_decks,self.study_deck_size)
+            if shuffle == True:
+                random.shuffle(self.full_card_deck)
+            self.numb_of_decks = self.determine_size(len(self.full_card_deck))
+            self.card_deck = self.nest_list(self.full_card_deck,self.numb_of_decks,self.study_deck_size)
             self.set_card_list()
             return 
+
+    def save_deck(self,new_file_name):
+        new_file_path = 'data/'+ str(new_file_name)
+        with open(self.filename,'r') as read_csv_file:
+            csv_reader = csv.reader(read_csv_file)
+            with open(new_file_path, 'w', newline='') as write_csv_file:
+                writer = csv.writer(write_csv_file)
+                for first in csv_reader:
+                    writer.writerow(first)
+                    break
+                for line in self.full_card_deck:
+                    writer.writerow(line)
+                new_file_path.close()
+            self.filename.close()
+        return
         
     def determine_size(self,val):
         while val % self.study_deck_size != 0:

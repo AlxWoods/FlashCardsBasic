@@ -1,10 +1,11 @@
 from tkinter import *
 from tkinter.messagebox import *
+from tkinter import filedialog
 import controller
 
 
 c = controller.Cards('data/words.csv')
-c.make_deck()
+c.make_deck(True)
 c.make_card_weight()
 
 
@@ -74,8 +75,22 @@ my_menu = Menu(window)
 window.config(menu=my_menu)
 
 #menu methods
-def get_file():
-    pass
+def get_file(): 
+    window.filename = filedialog.askopenfilename(initialdir='data/', title='Select a File')
+    c.filename = window.filename
+    c.make_deck(False)
+    return
+
+
+def save_file():
+    f = filedialog.asksaveasfile(initialdir='data/',initialfile = 'Untitled.csv',defaultextension=".csv",filetypes=[("csv","*.csv")])
+    if f != None:
+        file_name = ''
+        for f_char in reversed(f.name):
+            if f_char == '/':
+                break
+            file_name = file_name + f_char
+        c.save_deck(file_name[::-1])
 
 def prev_cards():
     card_change = c.current
@@ -89,21 +104,20 @@ def next_cards():
     if card_change == c.current:
         showinfo("Card Set Error", "Couldn't Go to Next Set")
 
-def dis_current():
+def display_current_cards():
     pass
-
 
 #create menu
 file_menu = Menu(my_menu, tearoff=0)
 my_menu.add_cascade(label="File", menu=file_menu)
-file_menu.add_command(label="New File", command=get_file)
+file_menu.add_command(label="Save", command=save_file)
+file_menu.add_command(label="Open File", command=get_file)
 file_menu.add_command(label="Exit", command=window.quit)
 
 cards_menu = Menu(my_menu, tearoff=0)
 my_menu.add_cascade(label="Cards", menu=cards_menu)
 cards_menu.add_command(label="Previous Card Set", command=prev_cards)
 cards_menu.add_command(label="Next Card Set", command=next_cards)
-cards_menu.add_command(label="Display Current Cards", command=dis_current)
-
+cards_menu.add_command(label="Display Current Cards", command=display_current_cards)
 
 window.mainloop()
